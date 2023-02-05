@@ -1,2 +1,2 @@
 # JUNGLE
-Proyecto de Análisis de Sistemas
+Proyecto para Análisis de Sistemas
