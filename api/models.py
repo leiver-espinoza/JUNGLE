@@ -2,8 +2,8 @@ from pydantic import BaseModel
 from typing import Optional
 
 class Defaults:
-    ADMIN_USERNAME = "admin"
-    ADMIN_PASSWORD = "admin"
+    ADMIN_USERNAME = "administrator"
+    ADMIN_PASSWORD = "administrator"
     ADMIN_TOKEN = "f27a729e-2489-41da-bcd0-20c487dfd4da"
     SERVICE_ACCOUNT = "remote_client"
     SERVICE_API_KEY = "f27a729e-2489-41da-bcd0-20c487dfd4da"

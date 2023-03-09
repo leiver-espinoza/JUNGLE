@@ -45,20 +45,14 @@ El proposito es brindar servicios para los modulos de:
 
 tags_metadata = [
     {
-        "name" : "Inicio de sesión",
+        "name" : "Inicio de sesión (Usuarios)",
         "description" : f"""Provee la manera de validar un usuario y una contraseña, retornando un token relacionado a la sesión iniciada en caso de que las credenciales sean las correctas.<br><br>
         En caso de que las credenciales sean incorrectas, devuelve una notificación de fallo en inicio de sesión, indicando que el usuario o la contraseña son incorrectos.<br><br>
-        El usuario y contraseña predeterminados para pruebas es <strong>{models.Defaults.ADMIN_USERNAME}</strong> / <strong>{models.Defaults.ADMIN_PASSWORD}</strong> , retornando el token <strong>{models.Defaults.ADMIN_TOKEN}</strong>.
-        Este mismo Token se puede utilizar para la acción de Validar Token /users/validateToken"""
+        El usuario y contraseña predeterminados para pruebas a nivel administrador es <strong>{models.Defaults.ADMIN_USERNAME}</strong> / <strong>{models.Defaults.ADMIN_PASSWORD}</strong>"""
     },
     {
-        "name" : "Validar Token",
-        "description": "Valida si un token proveido por la interfaz es válido o no. El token para pruebas es <strong>f27a729e-2489-41da-bcd0-20c487dfd4da</strong>"
-    },
-    {
-        "name" : "Validar Permisos por Token",
-        "description": """Retorna True en caso de que el token del asignado al usuario cuente con los permisos para ejecutar una accion,
-        basado en las tablas de asignación de roles y permisos, o False en caso contrario."""
+        "name" : "Inicio de sesión (Servicios)",
+        "description" : f"""***DESCRIPICON PENDIENTE DE COLOCAR***"""
     },
     {
         "name" : "Validar Permisos por Usuario",
@@ -107,19 +101,22 @@ app.add_middleware(
 
 # %% Entry Points
 
-@app.post("/users/login", tags=["Inicio de sesión"])
+@app.post("/users/login", tags=["Inicio de sesión (Usuarios)"])
 def users_login(request_user_login: models.Request_UserLogin, status_code=200):
     username = request_user_login.username
     if validate_permissions_by_user(username, 'login_web'):
-        password = request_user_login.password
-        if username == models.Defaults.ADMIN_USERNAME and password == models.Defaults.ADMIN_PASSWORD:
-            results = {"token" : models.Defaults.ADMIN_TOKEN}
-            return return_api_result(results)
-        else:
-            results = None
-            return_api_result(None,status.HTTP_401_UNAUTHORIZED,LABELS.ERRORS.CATALOG.get("invalid_credentials"))
+        # password = request_user_login.password
+        conn = connection()
+        results = conn.runSP('sp_users_login',request_user_login.json())
+        return return_api_result(results)
+        # if username == models.Defaults.ADMIN_USERNAME and password == models.Defaults.ADMIN_PASSWORD:
+        #     results = {"token" : models.Defaults.ADMIN_TOKEN}
+        #     return return_api_result(results)
+        # else:
+        #     results = None
+        #     return_api_result(None,status.HTTP_401_UNAUTHORIZED,LABELS.ERRORS.CATALOG.get("invalid_credentials"))
 
-@app.post("/service/login")
+@app.post("/service/login", tags=["Inicio de sesión (Servicios)"])
 def service_login(request_service_login: models.Request_ServiceLogin, status_code=200):
     username = request_service_login.username
     if validate_permissions_by_user(username, 'login_service'):
@@ -134,24 +131,17 @@ def service_login(request_service_login: models.Request_ServiceLogin, status_cod
             results = None
             return_api_result(None,status.HTTP_401_UNAUTHORIZED,LABELS.ERRORS.CATALOG.get("invalid_service_account"))
 
-@app.post("/users/validateToken", tags=["Validar Token"], status_code=200)
-def users_validate_token(request_validate_token: models.Request_ValidateToken, status_code=200):
-    if request_validate_token.token == models.Defaults.ADMIN_TOKEN:
-        results = {"token_status" : "OK"}
-        return return_api_result(results)
-    else:
-        return_api_result(None,status.HTTP_401_UNAUTHORIZED,LABELS.ERRORS.CATALOG.get("invalid_token"))
-
-@app.post("/permissions/validate/token", tags=["Validar Permisos por Token"], status_code=200)
-def permissions_validate_token(request_has_permissions_token: models.Request_HasPermissionsToken):
-    conn = connection()
-    results = conn.runSP('[dbo].[sp_validate_has_permission_token]',request_has_permissions_token.json())
-    return return_api_result(results)
+# @app.post("/users/validateToken", tags=["Validar Token"], status_code=200)
+# def users_validate_token(request_validate_token: models.Request_ValidateToken, status_code=200):
+#     if request_validate_token.token == models.Defaults.ADMIN_TOKEN:
+#         results = {"token_status" : "OK"}
+#         return return_api_result(results)
+#     else:
+#         return_api_result(None,status.HTTP_401_UNAUTHORIZED,LABELS.ERRORS.CATALOG.get("invalid_token"))
 
 @app.post("/permissions/validate/user", tags=["Validar Permisos por Usuario"], status_code=200)
 def permissions_validate_user(request_has_permissions_user: models.Request_HasPermissionsUser):
     conn = connection()
-    print(request_has_permissions_user.json)
     results = conn.runSP('[dbo].[sp_validate_has_permission_user]',request_has_permissions_user.json())
     return return_api_result(results)
 
@@ -270,6 +260,12 @@ def delete_user(
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.DELETE,True)
 
 # %% Methods for API usage without Entry Points
+
+#@app.post("/permissions/validate/token", tags=["Validar Permisos por Token"], status_code=200)
+def permissions_validate_token(request_has_permissions_token: models.Request_HasPermissionsToken):
+    conn = connection()
+    results = conn.runSP('[dbo].[sp_validate_has_permission_token]',request_has_permissions_token.json())
+    return return_api_result(results)
 
 def validate_permissions_by_token(request: models.Request_HasPermissionsToken, guard_name: str):
     auth_request = models.Request_HasPermissionsToken(

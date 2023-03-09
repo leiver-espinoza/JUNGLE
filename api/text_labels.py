@@ -15,6 +15,8 @@ class ERRORS:
         "invalid_authorization"     : "Transacción denegada o no autorizada",
 
         "00000" : "unknown_error",
+        "59001" : "No se ha logrado generar un nuevo inicio de sesión",
+        "59002" : "Nombre de usuario o contraseña son incorrectos",
         "60001" : "No se puede crear el usuario nuevo. Por favor revise la información suministrada. Si el problema persiste, contacte al administrador.",
         "60002" : "No se puede leer usuarios de la base de datos en este momento. Intente más tarde. Si el problema persiste, contacte al administrador.",
         "60003" : "No se puede actualizar el usuario. Por favor revise la información suministrada. Si el problema persiste, contacte al administrador.",
