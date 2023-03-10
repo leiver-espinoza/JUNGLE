@@ -7,7 +7,7 @@
 # uvicorn main:app --reload --host=192.168.100.108 --port=9000 --app-dir=/home/ubuntu/JUNGLE/api/
 
 # %% Imports
-from fastapi import FastAPI, Query, HTTPException, status
+from fastapi import FastAPI, Query, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
@@ -16,6 +16,7 @@ from uuid import uuid4
 
 import json
 import os
+import re
 
 import models
 import text_labels as LABELS
@@ -102,19 +103,14 @@ app.add_middleware(
 # %% Entry Points
 
 @app.post("/users/login", tags=["Inicio de sesión (Usuarios)"])
-def users_login(request_user_login: models.Request_UserLogin, status_code=200):
+def users_login(request_user_login: models.Request_UserLogin, request: Request, status_code=200):
+    # x = json.dumps(dict(request.headers))
+    # print(x)
     username = request_user_login.username
     if validate_permissions_by_user(username, 'login_web'):
-        # password = request_user_login.password
         conn = connection()
         results = conn.runSP('sp_users_login',request_user_login.json())
-        return return_api_result(results)
-        # if username == models.Defaults.ADMIN_USERNAME and password == models.Defaults.ADMIN_PASSWORD:
-        #     results = {"token" : models.Defaults.ADMIN_TOKEN}
-        #     return return_api_result(results)
-        # else:
-        #     results = None
-        #     return_api_result(None,status.HTTP_401_UNAUTHORIZED,LABELS.ERRORS.CATALOG.get("invalid_credentials"))
+        return return_api_result(results,status.HTTP_401_UNAUTHORIZED)
 
 @app.post("/service/login", tags=["Inicio de sesión (Servicios)"])
 def service_login(request_service_login: models.Request_ServiceLogin, status_code=200):
@@ -288,7 +284,6 @@ def validate_permissions_by_user(username: str, guard_name: str):
         guard_name=guard_name
     )
     guard_results = permissions_validate_user(auth_request)
-    print(guard_results)
     if guard_results["data"][0]["authorized"]:
         return guard_results["data"][0]["authorized"]
     else:
@@ -307,15 +302,15 @@ def return_api_result(
             return {
                     "data" : None
                 }
-        elif data:
-            return {
-                "data" : data
-            }
         elif "error" in data:
             raise HTTPException(
                 status_code=http_exception,
                 detail=data["detail"]
             )
+        elif data:
+            return {
+                "data" : data
+            }
     else:
         raise HTTPException(
             status_code=http_exception,
