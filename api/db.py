@@ -31,12 +31,6 @@ class connection:
         except Exception as ex:
             print(ex)
 
-    # def __del__(self):
-    #     try:
-    #         db.disconnect()
-    #     except Exception as ex:
-    #         return ex
-
     def execute(self,tmpSql:str):
         cursor = self.tmpConnection.cursor()
         cursor.execute(tmpSql)
