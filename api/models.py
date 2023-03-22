@@ -2,13 +2,13 @@ from pydantic import BaseModel
 from typing import Optional
 
 class Defaults:
-    ADMIN_USERNAME = "administrator"
-    ADMIN_PASSWORD = "administrator"
-    ADMIN_TOKEN = "f27a729e-2489-41da-bcd0-20c487dfd4da"
-    SERVICE_ACCOUNT = "remote_client"
-    SERVICE_API_KEY = "f27a729e-2489-41da-bcd0-20c487dfd4da"
-    SERVICE_SECRET_KEY = "f27a729e-2489-41da-bcd0-20c487dfd4da"
-    SERVICE_TOKEN = "f27a729e-2489-41da-bcd0-20c487dfd4da"
+    ADMIN_USERNAME      = "administrator"
+    ADMIN_PASSWORD      = "administrator"
+    ADMIN_TOKEN         = "f27a729e-2489-41da-bcd0-20c487dfd4da"
+    SERVICE_ACCOUNT     = "remote_client"
+    SERVICE_API_KEY     = "f27a729e-2489-41da-bcd0-20c487dfd4da"
+    SERVICE_SECRET_KEY  = "remote_client"
+    SERVICE_TOKEN       = "f27a729e-2489-41da-bcd0-20c487dfd4da"
     
 # %%
 # INICIO - Login y validación de permisos 
@@ -23,15 +23,15 @@ class Request_ServiceLogin(BaseModel):
     secret_key: str = Defaults.SERVICE_SECRET_KEY
 
 class Request_ValidateToken(BaseModel):
-    token: str = Defaults.ADMIN_TOKEN
+    token: str = ""
 
 class Request_HasPermissionsToken(BaseModel):
-    username: str = Defaults.ADMIN_USERNAME
-    token_value: str = Defaults.ADMIN_TOKEN
+    username: str = ""
+    token_value: str = ""
     guard_name: str
 
 class Request_HasPermissionsUser(BaseModel):
-    username: str = Defaults.ADMIN_USERNAME
+    username: str = ""
     guard_name: str
 
 # FIN - Login y validación de permisos 
@@ -40,8 +40,8 @@ class Request_HasPermissionsUser(BaseModel):
 # INICIO - Usuarios
 
 class Request_UsersAdd(BaseModel):
-    token_owner: str = Defaults.ADMIN_USERNAME
-    token_value: str = Defaults.ADMIN_TOKEN
+    token_owner: str = ""
+    token_value: str = ""
     name_first: str = ""
     name_last: str = ""
     email: str = ""
@@ -50,13 +50,13 @@ class Request_UsersAdd(BaseModel):
     enabled: bool
 
 class Request_UsersRead(BaseModel):
-    token_owner: str = Defaults.ADMIN_USERNAME
-    token_value: str  = Defaults.ADMIN_TOKEN
+    token_owner: str = ""
+    token_value: str  = ""
     id: int
 
 class Request_UsersReadAll(BaseModel):
-    token_owner: str = Defaults.ADMIN_USERNAME
-    token_value: str = Defaults.ADMIN_TOKEN
+    token_owner: str = ""
+    token_value: str = ""
     name_first: Optional[str] = ""
     name_last: Optional[str] = ""
     email: Optional[str] = ""
@@ -64,8 +64,8 @@ class Request_UsersReadAll(BaseModel):
     enabled: Optional[bool] = True
 
 class Request_UsersUpdate(BaseModel):
-    token_owner: str = Defaults.ADMIN_USERNAME
-    token_value: str = Defaults.ADMIN_TOKEN
+    token_owner: str = ""
+    token_value: str = ""
     id: int = 2
     name_first: Optional[str] = ""
     name_last: Optional[str] = ""
@@ -74,8 +74,16 @@ class Request_UsersUpdate(BaseModel):
     enabled: Optional[bool] = True
 
 class Request_UsersDelete(BaseModel):
-    token_owner: str = Defaults.ADMIN_USERNAME
-    token_value: str  = Defaults.ADMIN_TOKEN
+    token_owner: str = ""
+    token_value: str  = ""
     id: int
 
+class Request_StatsCreate(BaseModel):
+    token_owner: str = ""
+    token_value: str = ""
+    client_mac_address : str = ""
+    indicator_key : str = ""
+    ipaddress : str = ""
+    value : str = ""
+    reported_datetime : str = ""
 # FIN - Usuarios

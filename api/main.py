@@ -72,6 +72,10 @@ tags_metadata = [
         </table>
         """
     },
+    {
+        "name" : "Indicadores",
+        "description" : "Mantenimiento de indicadores"
+    }
 ]
 
 # %% FastAPI Configuration
@@ -110,22 +114,15 @@ def users_login(request_user_login: models.Request_UserLogin, request: Request, 
     if validate_permissions_by_user(username, 'login_web'):
         conn = connection()
         results = conn.runSP('sp_users_login',request_user_login.json())
-        return return_api_result(results,status.HTTP_401_UNAUTHORIZED)
+        return return_api_result(results, status.HTTP_401_UNAUTHORIZED)
 
 @app.post("/service/login", tags=["Inicio de sesión (Servicios)"])
 def service_login(request_service_login: models.Request_ServiceLogin, status_code=200):
     username = request_service_login.username
     if validate_permissions_by_user(username, 'login_service'):
-        api_key = request_service_login.api_key
-        secret_key = request_service_login.secret_key
-        if (username == models.Defaults.SERVICE_ACCOUNT and
-            api_key == models.Defaults.SERVICE_API_KEY and
-            secret_key == models.Defaults.SERVICE_SECRET_KEY):
-            results = {"token" : models.Defaults.SERVICE_TOKEN}
-            return return_api_result(results)
-        else:
-            results = None
-            return_api_result(None,status.HTTP_401_UNAUTHORIZED,LABELS.ERRORS.CATALOG.get("invalid_service_account"))
+        conn = connection()
+        results = conn.runSP('sp_client_login',request_service_login.json())
+        return return_api_result(results, status.HTTP_401_UNAUTHORIZED)
 
 # @app.post("/users/validateToken", tags=["Validar Token"], status_code=200)
 # def users_validate_token(request_validate_token: models.Request_ValidateToken, status_code=200):
@@ -254,6 +251,15 @@ def delete_user(
         conn = connection()
         results = conn.runSP('[dbo].[sp_users_delete]',request_users_delete.json(),True,False)
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.DELETE,True)
+
+
+@app.post("/stats/create", tags=[""], status_code=201)
+def create_stats(request_stats_add: models.Request_StatsCreate):
+    #if validate_permissions_by_token(request_stats_add, 'stats_create'):
+    conn = connection()
+    results = conn.runSP('[dbo].[sp_stats_create]',request_stats_add.json(),True)
+    return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.CREATE)
+
 
 # %% Methods for API usage without Entry Points
 
