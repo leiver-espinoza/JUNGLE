@@ -15,12 +15,28 @@ class ERRORS:
         "invalid_authorization"     : "Transacción denegada o no autorizada",
 
         "00000" : "unknown_error",
+        # Users
         "59001" : "No se ha logrado generar un nuevo inicio de sesión",
         "59002" : "Nombre de usuario o contraseña son incorrectos",
         "60001" : "No se puede crear el usuario nuevo. Por favor revise la información suministrada. Si el problema persiste, contacte al administrador.",
         "60002" : "No se puede leer usuarios de la base de datos en este momento. Intente más tarde. Si el problema persiste, contacte al administrador.",
         "60003" : "No se puede actualizar el usuario. Por favor revise la información suministrada. Si el problema persiste, contacte al administrador.",
-        "60004" : "No se puede eliminar el usuario."
+        "60004" : "No se puede eliminar el usuario.",
+        # sp_clients
+        "60101" : "",
+        "60102" : "",
+        "60103" : "",
+        "60104" : "",
+        # sp_indicators_client_config
+        "60201" : "",
+        "60202" : "",
+        "60203" : "",
+        "60204" : "",
+        # sp_stats
+        "60301" : "",
+        "60302" : "",
+        "60303" : "",
+        "60304" : "",
     }
 
 class TEXTS:
