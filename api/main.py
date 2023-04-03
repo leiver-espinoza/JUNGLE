@@ -121,7 +121,7 @@ def service_login(request_service_login: models.Request_ServiceLogin, status_cod
     username = request_service_login.username
     if validate_permissions_by_user(username, 'login_service'):
         conn = connection()
-        results = conn.runSP('sp_client_login',request_service_login.json())
+        results = conn.runSP('sp_clients_login',request_service_login.json())
         return return_api_result(results, status.HTTP_401_UNAUTHORIZED)
 
 # @app.post("/users/validateToken", tags=["Validar Token"], status_code=200)

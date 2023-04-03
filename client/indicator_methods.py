@@ -35,11 +35,11 @@ class defined_stats():
 
     def compose_result(self,indicator_key : str, value):
         return {
-            "mac_address"       : self.mac_address,
-            "indicator_key"     : indicator_key,
-            "ip_address"        : self.ip_address,
-            "value"             : value,
-            "reported_datetime" : self.fd(timestamp.now())
+            "client_mac_address"    : self.mac_address,
+            "indicator_key"         : indicator_key,
+            "ipaddress"             : self.ip_address,
+            "value"                 : value,
+            "reported_datetime"     : self.fd(timestamp.now())
         }
 
     def get_mac_address(self,indicator_key: str):
@@ -135,7 +135,7 @@ class defined_stats():
         value = round(psutil.virtual_memory()[3]/1024/1024,2)
         return self.compose_result(indicator_key, value)
 
-    def get_memory_total_mb(self,indicator_key : str):
+    def get_memory_free_mb(self,indicator_key : str):
         value = round(psutil.virtual_memory()[4]/1024/1024,2)
         return self.compose_result(indicator_key, value)
 

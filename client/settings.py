@@ -2,14 +2,15 @@ import os
 from os.path import exists
 import json
 import sys
-import shutil
+import requests
 
 class settings():
 
-    SETTINGS_FILE_DEFAULT = '//settings_default.json'
     SETTINGS_FILE_PRODUCTION = '//settings_production.json'
+    SETTINGS_FILE_LOG_PENDING = '//log_pending.log'
+    SETTINGS_FILE_LOG_TRANSMITTED = '//log_transmitted.log'
     version : int
-    indicators_settings : None
+    indicators : None
 
     def __init__(self) -> None:
         self.get_configs()
@@ -23,21 +24,20 @@ class settings():
     def get_configs(self):
         path_app = self.get_application_path()
         file_production = path_app + self.SETTINGS_FILE_PRODUCTION
-        q = exists(file_production) 
         if not exists(file_production):
-            file_default = path_app + self.SETTINGS_FILE_DEFAULT
-            shutil.copyfile(file_default,file_production)
+            URL = "https://raw.githubusercontent.com/leiver-espinoza/JUNGLE/main/client/settings_production.json"
+            response = requests.get(URL)
+            open(file_production, "wb").write(response.content)
         with open(file_production,"r") as settings_file:
             tmp_client_settings = settings_file.read()
         self.version = json.loads(tmp_client_settings)['version']
-        self.indicators_settings = json.loads(tmp_client_settings)['indicators']
+        self.indicators = json.loads(tmp_client_settings)['indicators']
+
+    def set_configs(self,configuration_parameters : str):
         pass
 
-    def save_configs(self,configuration_parameters : str):
-        pass
-
-    def get_configs_version(self):
-        pass
-
-    def set_configs_version(self):
-        pass
+    def get_file_log_pending_path(self):
+        return self.get_application_path() + self.SETTINGS_FILE_LOG_PENDING
+    
+    def get_file_log_transmitted_path(self):
+        return self.get_application_path() + self.SETTINGS_FILE_LOG_TRANSMITTED

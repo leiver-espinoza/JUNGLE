@@ -57,7 +57,7 @@
             "interval_seconds" : 5
         },
         {
-            "indicator_key" : "memory_total_mb",
+            "indicator_key" : "memory_free_mb",
             "enabled" : true,
             "interval_seconds" : 5
         },
@@ -118,6 +118,11 @@
         },
         {
             "indicator_key" : "battery_power_plugged",
+            "enabled" : true,
+            "interval_seconds" : 5
+        },
+        {
+            "indicator_key" : "platform_name",
             "enabled" : true,
             "interval_seconds" : 5
         }
