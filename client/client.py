@@ -92,36 +92,24 @@ def worker(indicator_key: str, interval_seconds : int):
         tmpRequestBody['token_owner'] = token_owner
         tmpRequestBody['token_value'] = token_value
         connection.post_stats(tmpRequestBody)
-        #print(getattr(globals()['class_defined_stats'](), 'get_' + indicator_key)(indicator_key))
-        #print(tmpRequestBody)
+        print(tmpRequestBody)
         time.sleep(interval_seconds)
 
 
 token_value = connection.api_login()
 token_owner = connection.DEFAULT_USERNAME
 
-# for indicator in client_settings.indicators:
-#     indicator_key = indicator['indicator_key']
-#     interval_seconds = indicator['interval_seconds']
+for indicator in client_settings.indicators:
+    # print(indicator)
+    indicator_key = indicator['indicator_key']
+    interval_seconds = indicator['interval_seconds']
+    if indicator['enabled']:
+        threading.Thread(
+            target=worker, 
+            daemon=True, 
+            args=(
+                indicator['indicator_key'],
+                indicator['interval_seconds']
+            )).start()
 
-#     threading.Thread(
-#         target=worker, 
-#         daemon=True, 
-#         args=(
-#             indicator['indicator_key'],
-#             indicator['interval_seconds']
-#         )).start()
-
-indicator_key = "memory_total_mb"
-print(getattr(globals()['class_defined_stats'](), 'get_' + indicator_key)(indicator_key))
-indicator_key = "memory_available_mb"
-print(getattr(globals()['class_defined_stats'](), 'get_' + indicator_key)(indicator_key))
-indicator_key = "memory_perc_used"
-print(getattr(globals()['class_defined_stats'](), 'get_' + indicator_key)(indicator_key))
-indicator_key = "memory_used_mb"
-print(getattr(globals()['class_defined_stats'](), 'get_' + indicator_key)(indicator_key))
-indicator_key = "memory_free_mb"
-print(getattr(globals()['class_defined_stats'](), 'get_' + indicator_key)(indicator_key))
-
-input("press key")
-done = True
+input("Engine is running...")
