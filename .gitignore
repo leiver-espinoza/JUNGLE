@@ -3,3 +3,4 @@ test*
 client.spec
 build/
 dist/
+log_*
