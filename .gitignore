@@ -1,6 +1,5 @@
 __pycache__
 test*
-client.spec
+*.spec
 build/
-dist/
 log_*
