@@ -1,32 +1,36 @@
 # pip install psutil
 # pip install pyinstaller
-# pyinstaller client.py --onefile
+# pyinstaller client.py --onefile --name jungle-lclient
+# pyinstaller client.py --onefile --name jungle-wclient.exe
 
 import os
 import threading
 import time
+import sys
 
 import connection
 from indicator_methods import defined_stats as class_defined_stats
 from settings import settings as class_client_settings
 
+
 token_value = ""
 token_owner = ""
 client_settings = class_client_settings()
 
-clear_screen_command = {
-    'Windows' : 'cls',
-    'Linux' : 'clear',
-    'Mac' : 'clear'
-}
-defined_stats = class_defined_stats()
-os.system(clear_screen_command[defined_stats.sub_platform_name()])
-defined_stats = None
-clear_screen_command = None
-
 controller = {}
 token_value = connection.api_login()
 token_owner = connection.DEFAULT_USERNAME
+
+def ClearScreen():
+    clear_screen_command = {
+        'Windows' : 'cls',
+        'Linux' : 'clear',
+        'Mac' : 'clear'
+    }
+    defined_stats = class_defined_stats()
+    os.system(clear_screen_command[defined_stats.sub_platform_name()])
+    defined_stats = None
+    clear_screen_command = None
 
 def InitializeIndicators():
     controller.clear()
@@ -63,13 +67,24 @@ def RunIndicators():
                                 name='JUNGLE - ' + indicator_key)
         controller[indicator_key]['process'].start()
 
-InitializeIndicators()
-runner = threading.Thread(target=RunIndicators, daemon=True)
-runner.start()
+def main():
+    ClearScreen()
+    InitializeIndicators()
+    runner = threading.Thread(target=RunIndicators, daemon=True)
+    runner.start()
 
-try:
-    while True:
-        input("Engine is running. Press CTRL+C to close finish the program.")
-except KeyboardInterrupt:
-    pass
-print('\nMonitoring program is closing now...')
+    try:
+        while True:
+            input("Engine is running. Press CTRL+C to close finish the program.")
+    except KeyboardInterrupt:
+        pass
+    print('\nMonitoring program is closing now...')
+
+if __name__ == '__main__':
+    rc = 1
+    try:
+        main()
+        rc = 0
+    except Exception as e:
+        print('Error: %s' % e, file=sys.stderr)
+    sys.exit(rc)
