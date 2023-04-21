@@ -49,7 +49,7 @@ class defined_stats():
         for key, value in (psutil.net_if_addrs().items()):
             if (ip_address in str(value)):
                 for network in value:
-                    if ('ff:ff:ff:ff:ff:ff' in str(network)):
+                    if ('ff:ff:ff:ff:ff:ff' in str(network)) or ('AddressFamily.AF_LINK' in str(network)):
                         tmp_value = str(network[1])
         return tmp_value
     
