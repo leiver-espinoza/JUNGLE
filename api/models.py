@@ -87,3 +87,6 @@ class Request_StatsCreate(BaseModel):
     value : str = ""
     reported_datetime : str = ""
 # FIN - Usuarios
+
+class Request_ClientSettings(BaseModel):
+    client_mac_address: str = ""

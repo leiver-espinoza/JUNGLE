@@ -260,7 +260,14 @@ def create_stats(request_stats_add: models.Request_StatsCreate):
     results = conn.runSP('[dbo].[sp_stats_create]',request_stats_add.json(),True)
     return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.CREATE)
 
-
+@app.post("/clients/get_settings", tags=["Clients"], status_code=200)
+def read_client_settings(request_client_settings: models.Request_ClientSettings):
+    conn = connection()
+    results = conn.runSP('[dbo].[sp_indicators_client_config_push_settings]',request_client_settings.json())
+    print(request_client_settings.json())
+    update_conn = connection()
+    update_conn.runSP('[dbo].[sp_clients_switch_push]',request_client_settings.json(),True,False)
+    return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 # %% Methods for API usage without Entry Points
 
 #@app.post("/permissions/validate/token", tags=["Validar Permisos por Token"], status_code=200)

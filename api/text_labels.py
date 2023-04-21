@@ -49,5 +49,6 @@ class TEXTS:
         "user_read_name_email"       : "Email del usuario (en su totalidad o una parte de)",
         "user_read_name_username"    : "Cuenta de usuario (en su totalidad o una parte de)",
         "user_read_enabled"          : "Estatus del usuario, sea Activo o Inactivo",
-        "user_delete_id"             : "ID del registro que se desea eliminar"
+        "user_delete_id"             : "ID del registro que se desea eliminar",
+        "client_mac_address"         : "Mac Address of the already setup client"
     }
