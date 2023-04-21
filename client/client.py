@@ -2,6 +2,7 @@
 # pip install pyinstaller
 # pyinstaller client.py --onefile --name jungle-lclient
 # pyinstaller client.py --onefile --name jungle-wclient.exe
+# pyinstaller client.py --onefile --name jungle-mclient.exe
 
 import os
 import threading
@@ -25,7 +26,7 @@ def ClearScreen():
     clear_screen_command = {
         'Windows' : 'cls',
         'Linux' : 'clear',
-        'Mac' : 'clear'
+        'Darwin' : 'clear'
     }
     defined_stats = class_defined_stats()
     os.system(clear_screen_command[defined_stats.sub_platform_name()])
