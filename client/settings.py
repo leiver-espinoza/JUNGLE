@@ -1,15 +1,16 @@
-import os
-from os.path import exists
 import json
+import os
 import sys
+from os.path import exists
+
 import requests
+
 
 class settings():
 
     SETTINGS_FILE_PRODUCTION = '//settings_production.json'
     SETTINGS_FILE_LOG_PENDING = '//log_pending.log'
     SETTINGS_FILE_LOG_TRANSMITTED = '//log_transmitted.log'
-    version : int
     indicators : None
 
     def __init__(self) -> None:
@@ -30,11 +31,13 @@ class settings():
             open(file_production, "wb").write(response.content)
         with open(file_production,"r") as settings_file:
             tmp_client_settings = settings_file.read()
-        self.version = json.loads(tmp_client_settings)['version']
-        self.indicators = json.loads(tmp_client_settings)['indicators']
+        self.indicators = json.loads(tmp_client_settings)['data']
 
     def set_configs(self,configuration_parameters : str):
-        pass
+        path_app = self.get_application_path()
+        file_production = path_app + self.SETTINGS_FILE_PRODUCTION
+        with open(file_production, 'w') as outfile:
+            json.dump(configuration_parameters, outfile)
 
     def get_file_log_pending_path(self):
         return self.get_application_path() + self.SETTINGS_FILE_LOG_PENDING

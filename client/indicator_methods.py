@@ -1,11 +1,12 @@
-import socket
-import os
-import sys
-import platform
-import psutil
 import datetime
-from datetime import datetime as timestamp
+import os
+import platform
 import re
+import socket
+import sys
+from datetime import datetime as timestamp
+
+import psutil
 
 class defined_stats():
     ip_address : str = ''
@@ -42,13 +43,18 @@ class defined_stats():
             "reported_datetime"     : self.fd(timestamp.now())
         }
 
-    def get_mac_address(self,indicator_key: str):
+    def sub_mac_address(self):
         tmp_value = None
         ip_address = self.get_ip_address('ip_address')['value']
         for key, value in (psutil.net_if_addrs().items()):
-            if value[1][1] == ip_address:
-                tmp_value = value[0][1]
-                break
+            if (ip_address in str(value)):
+                for network in value:
+                    if ('ff:ff:ff:ff:ff:ff' in str(network)):
+                        tmp_value = str(network[1])
+        return tmp_value
+    
+    def get_mac_address(self,indicator_key: str):
+        tmp_value = self.sub_mac_address()
         return self.compose_result(indicator_key, tmp_value)
 
     def get_ip_address(self,indicator_key : str):
@@ -63,8 +69,11 @@ class defined_stats():
         elif __file__:
             return os.path.dirname(__file__)
 
+    def sub_platform_name(self):
+        return platform.system()
+    
     def get_platform_name(self,indicator_key : str):
-        value = platform.system()
+        value = self.sub_platform_name()
         return self.compose_result(indicator_key, value)
 
     def get_boot_time(self,indicator_key : str):
@@ -171,7 +180,7 @@ class defined_stats():
         except:
             disk = '0'
         try:
-            value = round(psutil.disk_usage(psutil.disk_partitions()[int(disk)][0])[0]/1024/1024,2)
+            value = round(psutil.disk_usage(psutil.disk_partitions()[int(disk)][1])[0]/1024/1024,2)
         except:
             value = None
         return self.compose_result(indicator_key, value)
@@ -182,7 +191,7 @@ class defined_stats():
         except:
             disk = '0'
         try:
-            value = round(psutil.disk_usage(psutil.disk_partitions()[int(disk)][0])[1]/1024/1024,2)
+            value = round(psutil.disk_usage(psutil.disk_partitions()[int(disk)][1])[1]/1024/1024,2)
         except:
             value = None
         return self.compose_result(indicator_key, value)
@@ -193,7 +202,7 @@ class defined_stats():
         except:
             disk = '0'
         try:
-            value = round(psutil.disk_usage(psutil.disk_partitions()[int(disk)][0])[2]/1024/1024,2)
+            value = round(psutil.disk_usage(psutil.disk_partitions()[int(disk)][1])[2]/1024/1024,2)
         except:
             value = None
         return self.compose_result(indicator_key, value)
@@ -204,7 +213,7 @@ class defined_stats():
         except:
             disk = '0'
         try:
-            value = round(psutil.disk_usage(psutil.disk_partitions()[int(disk)][0])[3]/100,4)
+            value = round(psutil.disk_usage(psutil.disk_partitions()[int(disk)][1])[3]/100,4)
         except:
             value = None
         return self.compose_result(indicator_key, value)
@@ -215,7 +224,7 @@ class defined_stats():
         if indicator:
             value = round(indicator[0]/100,4)
         else:
-            value = None
+            value = 0
         return self.compose_result(indicator_key, value)
 
     def get_battery_power_plugged(self,indicator_key : str):
@@ -223,5 +232,5 @@ class defined_stats():
         if indicator:
             value = indicator[2]
         else:
-            value = None
+            value = 0
         return self.compose_result(indicator_key, value)
