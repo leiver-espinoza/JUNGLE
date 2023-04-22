@@ -94,3 +94,19 @@ class Request_ClientSettings(BaseModel):
 class Request_Get_DashboardHeader(BaseModel):
     token_owner: str = ""
     token_value: str = ""
+
+class Request_Get_DashboardSidepanel(BaseModel):
+    token_owner: str = ""
+    token_value: str = ""
+
+class Request_Get_DashboardCBOS(BaseModel):
+    token_owner: str = ""
+    token_value: str = ""
+    client_id: int = 0
+
+class Request_Get_DashboardDetails(BaseModel):
+    token_owner: str = ""
+    token_value: str = ""
+    client_id: int = 0
+    indicator_key: str = ""
+    records: int = 100

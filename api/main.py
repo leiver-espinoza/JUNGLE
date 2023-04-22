@@ -285,6 +285,98 @@ def get_dashboard_header(
         results = conn.runSP('[dbo].[sp_dashboard_top_panel]')
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 
+@app.get("/dashboard/sidepanel", tags=[""], status_code=200)
+def get_dashboard_sidepanel(
+        param_token_owner= Query(
+            models.Defaults.ADMIN_USERNAME, 
+            title="token_owner", 
+            description=LABELS.TEXTS.CATALOG.get("token_owner")),
+        param_token_value= Query(
+            models.Defaults.ADMIN_TOKEN, 
+            title="token_value", 
+            description=LABELS.TEXTS.CATALOG.get("token_value"))
+    ):
+    try:
+        request_dashboard_sidepanel = models.Request_Get_DashboardSidepanel(
+            token_owner = param_token_owner,
+            token_value = param_token_value
+        )
+    except:
+        return return_api_result(None,status.HTTP_400_BAD_REQUEST,LABELS.ERRORS.CATALOG.get("invalid_parameters"))
+
+    if validate_permissions_by_token(request_dashboard_sidepanel, 'stats_read'):
+        conn = connection()
+        results = conn.runSP('[dbo].[sp_dashboard_side_panel]')
+        return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
+
+@app.get("/dashboard/DashboardCBOS", tags=[""], status_code=200)
+def get_dashboard_CBOS(
+        param_token_owner= Query(
+            models.Defaults.ADMIN_USERNAME, 
+            title="token_owner", 
+            description=LABELS.TEXTS.CATALOG.get("token_owner")),
+        param_token_value= Query(
+            models.Defaults.ADMIN_TOKEN, 
+            title="token_value", 
+            description=LABELS.TEXTS.CATALOG.get("token_value")),
+        param_client_id= Query(
+            0, 
+            title="client_id", 
+            description=LABELS.TEXTS.CATALOG.get("client_id"))
+    ):
+    try:
+        request_dashboard_CBOS = models.Request_Get_DashboardCBOS(
+            token_owner = param_token_owner,
+            token_value = param_token_value,
+            client_id = param_client_id
+        )
+    except:
+        return return_api_result(None,status.HTTP_400_BAD_REQUEST,LABELS.ERRORS.CATALOG.get("invalid_parameters"))
+
+    if validate_permissions_by_token(request_dashboard_CBOS, 'stats_read'):
+        conn = connection()
+        results = conn.runSP('[dbo].[sp_dashboard_details_cbos]',request_dashboard_CBOS.json())
+        return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
+
+@app.get("/dashboard/DashboardDetails", tags=[""], status_code=200)
+def get_dashboard_Details(
+        param_token_owner= Query(
+            models.Defaults.ADMIN_USERNAME, 
+            title="token_owner", 
+            description=LABELS.TEXTS.CATALOG.get("token_owner")),
+        param_token_value= Query(
+            models.Defaults.ADMIN_TOKEN, 
+            title="token_value", 
+            description=LABELS.TEXTS.CATALOG.get("token_value")),
+        param_client_id= Query(
+            0, 
+            title="client_id", 
+            description=LABELS.TEXTS.CATALOG.get("client_id")),
+        param_indicator_key= Query(
+            "", 
+            title="indicator_key", 
+            description=LABELS.TEXTS.CATALOG.get("indicator_key")),
+        param_records= Query(
+            0, 
+            title="records", 
+            description=LABELS.TEXTS.CATALOG.get("records"))
+    ):
+    try:
+        request_dashboard_details = models.Request_Get_DashboardDetails(
+            token_owner = param_token_owner,
+            token_value = param_token_value,
+            client_id = param_client_id,
+            indicator_key = param_indicator_key,
+            records = param_records
+        )
+    except:
+        return return_api_result(None,status.HTTP_400_BAD_REQUEST,LABELS.ERRORS.CATALOG.get("invalid_parameters"))
+
+    if validate_permissions_by_token(request_dashboard_details, 'stats_read'):
+        conn = connection()
+        results = conn.runSP('[dbo].[sp_dashboard_details_values]',request_dashboard_details.json())
+        return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
+
 @app.post("/clients/get_settings", tags=["Clients"], status_code=200)
 def read_client_settings(request_client_settings: models.Request_ClientSettings):
     conn = connection()
