@@ -90,3 +90,7 @@ class Request_StatsCreate(BaseModel):
 
 class Request_ClientSettings(BaseModel):
     client_mac_address: str = ""
+
+class Request_Get_DashboardHeader(BaseModel):
+    token_owner: str = ""
+    token_value: str = ""

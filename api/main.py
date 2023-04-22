@@ -121,7 +121,7 @@ def service_login(request_service_login: models.Request_ServiceLogin, status_cod
     username = request_service_login.username
     if validate_permissions_by_user(username, 'login_service'):
         conn = connection()
-        results = conn.runSP('sp_clients_login',request_service_login.json())
+        results = conn.runSP('sp_clients_login',request_service_login.json(),True)
         return return_api_result(results, status.HTTP_401_UNAUTHORIZED)
 
 # @app.post("/users/validateToken", tags=["Validar Token"], status_code=200)
@@ -255,16 +255,40 @@ def delete_user(
 
 @app.post("/stats/create", tags=[""], status_code=201)
 def create_stats(request_stats_add: models.Request_StatsCreate):
-    #if validate_permissions_by_token(request_stats_add, 'stats_create'):
-    conn = connection()
-    results = conn.runSP('[dbo].[sp_stats_create]',request_stats_add.json(),True)
-    return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.CREATE)
+    if validate_permissions_by_token(request_stats_add, 'stats_create'):
+        conn = connection()
+        results = conn.runSP('[dbo].[sp_stats_create]',request_stats_add.json(),True)
+        return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.CREATE)
+
+@app.get("/dashboard/header", tags=[""], status_code=200)
+def get_dashboard_header(
+        param_token_owner= Query(
+            models.Defaults.ADMIN_USERNAME, 
+            title="token_owner", 
+            description=LABELS.TEXTS.CATALOG.get("token_owner")),
+        param_token_value= Query(
+            models.Defaults.ADMIN_TOKEN, 
+            title="token_value", 
+            description=LABELS.TEXTS.CATALOG.get("token_value"))
+    ):
+    try:
+        request_dashboard_header = models.Request_Get_DashboardHeader(
+            token_owner = param_token_owner,
+            token_value = param_token_value
+        )
+    except:
+        return return_api_result(None,status.HTTP_400_BAD_REQUEST,LABELS.ERRORS.CATALOG.get("invalid_parameters"))
+
+    if validate_permissions_by_token(request_dashboard_header, 'stats_read'):
+        print(request_dashboard_header)
+        conn = connection()
+        results = conn.runSP('[dbo].[sp_dashboard_top_panel]')
+        return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 
 @app.post("/clients/get_settings", tags=["Clients"], status_code=200)
 def read_client_settings(request_client_settings: models.Request_ClientSettings):
     conn = connection()
     results = conn.runSP('[dbo].[sp_indicators_client_config_push_settings]',request_client_settings.json())
-    print(request_client_settings.json())
     update_conn = connection()
     update_conn.runSP('[dbo].[sp_clients_switch_push]',request_client_settings.json(),True,False)
     return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
