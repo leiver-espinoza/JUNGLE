@@ -37,11 +37,16 @@ class connection:
         rows = cursor.fetchall()
         return rows
 
-    def runSP(self, spName:str, spParams:str, forceCommit:bool=False, forceResults:bool=True):
+    def runSP(self, spName:str, spParams:str='', forceCommit:bool=False, forceResults:bool=True):
         try:
-            sql = F"{spName} @json = ?"
+            sql = F"{spName}"
+            if spParams != '':
+                sql = sql + ' @json = ?'
             cursor = self.tmpConnection.cursor()
-            cursor.execute(sql, spParams)
+            if spParams != '':
+                cursor.execute(sql, spParams)
+            else:
+                cursor.execute(sql)
             if forceResults:
                 rows = cursor.fetchall()
             if forceCommit:
@@ -79,4 +84,4 @@ def get_exception_detail(errorCode : str = None):
     if LABELS.ERRORS.CATALOG.get(errorCode):
         return LABELS.ERRORS.CATALOG.get(errorCode)
     else:
-        return LABELS.ERRORS.CATALOG.get(errorCode) + errorCode
+        return LABELS.ERRORS.CATALOG.get('00000') + ''
