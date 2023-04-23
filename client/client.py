@@ -2,7 +2,7 @@
 # pip install pyinstaller
 # pyinstaller client.py --onefile --name jungle-lclient
 # pyinstaller client.py --onefile --name jungle-wclient.exe
-# pyinstaller client.py --onefile --name jungle-mclient.exe
+# pyinstaller client.py --onefile --name jungle-mclient
 
 import os
 import threading
