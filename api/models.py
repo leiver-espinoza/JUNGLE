@@ -26,7 +26,7 @@ class Request_ValidateToken(BaseModel):
     token: str = ""
 
 class Request_HasPermissionsToken(BaseModel):
-    username: str = ""
+    token_owner: str = ""
     token_value: str = ""
     guard_name: str
 

@@ -49,14 +49,22 @@ def Worker(indicator_key: str):
     while True:
         if controller[indicator_key]['enabled']:
             tmpRequestBody = getattr(globals()['class_defined_stats'](), 'get_' + ''.join(i for i in indicator_key if not i.isdigit()))(indicator_key)
+            original_request = tmpRequestBody
             tmpRequestBody['token_owner'] = token_owner
             tmpRequestBody['token_value'] = token_value
             posting_result = connection.post_stats(tmpRequestBody)
             if posting_result:
-                if (posting_result['data'][0]['pull_updates']):
-                    connection.PullSettings()
-                    client_settings.get_configs()
-                    ResetIndicators()
+                if 'data' in posting_result:
+                    if (posting_result['data'][0]['pull_updates']):
+                        connection.PullSettings()
+                        client_settings.get_configs()
+                        ResetIndicators()
+                else:
+                    print('Couldn\'t send request: ' + original_request)
+                    print('Reason: ' + posting_result)
+                    print('Engine is running. Press CTRL+C to close finish the program.')
+            else:
+                print('Couldn\'t send request: ' + original_request)
         time.sleep(controller[indicator_key]['interval_seconds'])
 
 def RunIndicators():

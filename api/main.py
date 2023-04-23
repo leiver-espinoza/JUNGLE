@@ -108,8 +108,6 @@ app.add_middleware(
 
 @app.post("/users/login", tags=["Inicio de sesión (Usuarios)"])
 def users_login(request_user_login: models.Request_UserLogin, request: Request, status_code=200):
-    # x = json.dumps(dict(request.headers))
-    # print(x)
     username = request_user_login.username
     if validate_permissions_by_user(username, 'login_web'):
         conn = connection()
@@ -280,7 +278,6 @@ def get_dashboard_header(
         return return_api_result(None,status.HTTP_400_BAD_REQUEST,LABELS.ERRORS.CATALOG.get("invalid_parameters"))
 
     if validate_permissions_by_token(request_dashboard_header, 'stats_read'):
-        print(request_dashboard_header)
         conn = connection()
         results = conn.runSP('[dbo].[sp_dashboard_top_panel]')
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
@@ -394,7 +391,7 @@ def permissions_validate_token(request_has_permissions_token: models.Request_Has
 
 def validate_permissions_by_token(request: models.Request_HasPermissionsToken, guard_name: str):
     auth_request = models.Request_HasPermissionsToken(
-        username=request.token_owner,
+        token_owner=request.token_owner,
         token_value=request.token_value,
         guard_name=guard_name
     )
