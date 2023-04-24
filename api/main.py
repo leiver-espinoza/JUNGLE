@@ -46,35 +46,16 @@ El proposito es brindar servicios para los modulos de:
 
 tags_metadata = [
     {
-        "name" : "Inicio de sesión (Usuarios)",
-        "description" : f"""Provee la manera de validar un usuario y una contraseña, retornando un token relacionado a la sesión iniciada en caso de que las credenciales sean las correctas.<br><br>
-        En caso de que las credenciales sean incorrectas, devuelve una notificación de fallo en inicio de sesión, indicando que el usuario o la contraseña son incorrectos.<br><br>
-        El usuario y contraseña predeterminados para pruebas a nivel administrador es <strong>{models.Defaults.ADMIN_USERNAME}</strong> / <strong>{models.Defaults.ADMIN_PASSWORD}</strong>"""
-    },
-    {
-        "name" : "Inicio de sesión (Servicios)",
-        "description" : f"""***DESCRIPICON PENDIENTE DE COLOCAR***"""
-    },
-    {
-        "name" : "Validar Permisos por Usuario",
-        "description": """Retorna True en caso de que el usuario cuente con los permisos para ejecutar una accion,
-        basado en las tablas de asignación de roles y permisos, o False en caso contrario."""
+        "name" : "Control de cuentas y accesos",
+        "description" : ""
     },
     {
         "name" : "Usuarios",
-        "description" : """<h3>Acciones específicas dedicadas a la tabla de usuarios</h3><br>
-        <table style="border: 1px solid">
-            <tr><td><strong>Crear un usuario (/users/create):</strong> Permite agregar un nuevo usuario a la base de datos</td></tr>
-            <tr><td><strong>Leer un Usuario (/users/read):</strong> Retorna los datos de un usuario con base al ID de usuario proveído</td></tr>
-            <tr><td><strong>Leer Múltiples Usuarios (/users/read_all):</strong> Retorna la lista completa de usuarios que cumplan con los parámetros especificados</td></tr>
-            <tr><td><strong>Actualizar un Usuario (/users/update):</strong> Actualiza un registro de la tabla de usuarios con base a la información contenida en el parámetro de tipo JSON</td></tr>
-            <tr><td><strong>Eliminar un Usuario (/users/delete):</strong> Elimina el registro de un usuario con base al ID de usuario proveído</td></tr>
-        </table>
-        """
+        "description" : ""
     },
     {
         "name" : "Indicadores",
-        "description" : "Mantenimiento de indicadores"
+        "description" : ""
     }
 ]
 
@@ -106,7 +87,7 @@ app.add_middleware(
 
 # %% Entry Points
 
-@app.post("/users/login", tags=["Inicio de sesión (Usuarios)"])
+@app.post("/users/login", tags=["Control de cuentas y accesos"])
 def users_login(request_user_login: models.Request_UserLogin, request: Request, status_code=200):
     username = request_user_login.username
     if validate_permissions_by_user(username, 'login_web'):
@@ -114,7 +95,7 @@ def users_login(request_user_login: models.Request_UserLogin, request: Request, 
         results = conn.runSP('sp_users_login',request_user_login.json())
         return return_api_result(results, status.HTTP_401_UNAUTHORIZED)
 
-@app.post("/service/login", tags=["Inicio de sesión (Servicios)"])
+@app.post("/service/login", tags=["Control de cuentas y accesos"])
 def service_login(request_service_login: models.Request_ServiceLogin, status_code=200):
     username = request_service_login.username
     if validate_permissions_by_user(username, 'login_service'):
@@ -130,7 +111,7 @@ def service_login(request_service_login: models.Request_ServiceLogin, status_cod
 #     else:
 #         return_api_result(None,status.HTTP_401_UNAUTHORIZED,LABELS.ERRORS.CATALOG.get("invalid_token"))
 
-@app.post("/permissions/validate/user", tags=["Validar Permisos por Usuario"], status_code=200)
+@app.post("/permissions/validate/user", tags=["Control de cuentas y accesos"], status_code=200)
 def permissions_validate_user(request_has_permissions_user: models.Request_HasPermissionsUser):
     conn = connection()
     results = conn.runSP('[dbo].[sp_validate_has_permission_user]',request_has_permissions_user.json())
@@ -251,14 +232,14 @@ def delete_user(
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.DELETE,True)
 
 
-@app.post("/stats/create", tags=[""], status_code=201)
+@app.post("/stats/create", tags=["Indicadores"], status_code=201)
 def create_stats(request_stats_add: models.Request_StatsCreate):
     if validate_permissions_by_token(request_stats_add, 'stats_create'):
         conn = connection()
         results = conn.runSP('[dbo].[sp_stats_create]',request_stats_add.json(),True)
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.CREATE)
 
-@app.get("/dashboard/header", tags=[""], status_code=200)
+@app.get("/dashboard/header", tags=["Indicadores"], status_code=200)
 def get_dashboard_header(
         param_token_owner= Query(
             models.Defaults.ADMIN_USERNAME, 
@@ -282,7 +263,7 @@ def get_dashboard_header(
         results = conn.runSP('[dbo].[sp_dashboard_top_panel]')
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 
-@app.get("/dashboard/sidepanel", tags=[""], status_code=200)
+@app.get("/dashboard/sidepanel", tags=["Indicadores"], status_code=200)
 def get_dashboard_sidepanel(
         param_token_owner= Query(
             models.Defaults.ADMIN_USERNAME, 
@@ -306,7 +287,7 @@ def get_dashboard_sidepanel(
         results = conn.runSP('[dbo].[sp_dashboard_side_panel]')
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 
-@app.get("/dashboard/DashboardCBOS", tags=[""], status_code=200)
+@app.get("/dashboard/DashboardCBOS", tags=["Indicadores"], status_code=200)
 def get_dashboard_CBOS(
         param_token_owner= Query(
             models.Defaults.ADMIN_USERNAME, 
@@ -335,7 +316,7 @@ def get_dashboard_CBOS(
         results = conn.runSP('[dbo].[sp_dashboard_details_cbos]',request_dashboard_CBOS.json())
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 
-@app.get("/dashboard/DashboardDetails", tags=[""], status_code=200)
+@app.get("/dashboard/DashboardDetails", tags=["Indicadores"], status_code=200)
 def get_dashboard_Details(
         param_token_owner= Query(
             models.Defaults.ADMIN_USERNAME, 
@@ -374,12 +355,56 @@ def get_dashboard_Details(
         results = conn.runSP('[dbo].[sp_dashboard_details_values]',request_dashboard_details.json())
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 
-@app.post("/clients/get_settings", tags=["Clients"], status_code=200)
+@app.get("/clients/get_clients", tags=["Clientes"], status_code=200)
+def read_client(
+        param_token_owner= Query(
+            models.Defaults.ADMIN_USERNAME, 
+            title="token_owner", 
+            description=LABELS.TEXTS.CATALOG.get("token_owner")),
+        param_token_value= Query(
+            models.Defaults.ADMIN_TOKEN, 
+            title="token_value", 
+            description=LABELS.TEXTS.CATALOG.get("token_value")),
+        param_mac_address= Query(
+            "", 
+            title="client_mac_address", 
+            description=LABELS.TEXTS.CATALOG.get("client_mac_address")),
+        param_friendly_name= Query(
+            "", 
+            title="friendly_name", 
+            description=LABELS.TEXTS.CATALOG.get("friendly_name")),
+        param_netbios_name= Query(
+            "", 
+            title="netbios_name", 
+            description=LABELS.TEXTS.CATALOG.get("netbios_name"))
+    ):
+    try:
+        request_client = models.Request_Get_DashboardDetails(
+            token_owner = param_token_owner,
+            token_value = param_token_value,
+            mac_address = param_mac_address,
+            netbios_name = param_netbios_name,
+            friendly_name = param_friendly_name
+        )
+    except:
+        return return_api_result(None,status.HTTP_400_BAD_REQUEST,LABELS.ERRORS.CATALOG.get("invalid_parameters"))
+    conn = connection()
+    results = conn.runSP('[dbo].[sp_clients_read_all]',request_client.json())
+    return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
+
+@app.post("/clients/get_settings", tags=["Clientes"], status_code=200)
 def read_client_settings(request_client_settings: models.Request_ClientSettings):
     conn = connection()
     results = conn.runSP('[dbo].[sp_indicators_client_config_push_settings]',request_client_settings.json())
     update_conn = connection()
     update_conn.runSP('[dbo].[sp_clients_switch_push]',request_client_settings.json(),True,False)
+    return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
+
+@app.post("/clients/update_settings", tags=["Clientes"], status_code=200)
+def update_client_settings(request_client_settings: models.Request_Post_ClientSettings):
+    conn = connection()
+    print(request_client_settings)
+    results = conn.runSP('[dbo].[sp_indicators_client_config_update]',request_client_settings.json(),True,True)
     return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 # %% Methods for API usage without Entry Points
 

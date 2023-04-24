@@ -91,6 +91,13 @@ class Request_StatsCreate(BaseModel):
 class Request_ClientSettings(BaseModel):
     client_mac_address: str = ""
 
+class Request_Clients(BaseModel):
+    token_owner: str = ""
+    token_value: str = ""
+    mac_address: Optional[str] = ""
+    netbios_name: Optional[str] = ""
+    friendly_name: Optional[str] = ""
+
 class Request_Get_DashboardHeader(BaseModel):
     token_owner: str = ""
     token_value: str = ""
@@ -110,3 +117,12 @@ class Request_Get_DashboardDetails(BaseModel):
     client_id: int = 0
     indicator_key: str = ""
     records: int = 100
+
+class Request_Post_ClientSettings(BaseModel):
+    id: int = 0
+    interval_seconds: Optional[int] = None
+    enabled: Optional[bool] = True
+    threshold_l4: Optional[int] = None
+    threshold_l3: Optional[int] = None
+    threshold_l2: Optional[int] = None
+    threshold_l1: Optional[int] = None

@@ -53,5 +53,15 @@ class TEXTS:
         "client_mac_address"         : "Mac Address of the already setup client",
         "client_id"                  : "ID assigned by the database to the computer or equipment",
         "indicator_key"              : "Text unique identifier for every indicator",
-        "records"                    : "Number of records"
+        "records"                    : "Number of records",
+        "netbios_name"               : "Computer name within network (16 characters)",
+        "friendly_name"              : "Friendly computer name at the user level",
+        "push_updates"               : "Push an update to client settings",
+        "version"                    : "Settings version number",
+        "enabled"                    : "Enable system status",
+        "threshold_l4"               : "Threshold window for Normal Operation status",
+        "threshold_l3"               : "Threshold window for Warning status",
+        "threshold_l2"               : "Threshold window for Alert status",
+        "threshold_l1"               : "Threshold window for Critical status",
+        "id"                         : "Record ID"
     }
