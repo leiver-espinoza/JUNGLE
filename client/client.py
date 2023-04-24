@@ -60,11 +60,11 @@ def Worker(indicator_key: str):
                         client_settings.get_configs()
                         ResetIndicators()
                 else:
-                    print('Couldn\'t send request: ' + original_request)
-                    print('Reason: ' + posting_result)
+                    print('Couldn\'t send request: ' + str(original_request))
+                    print('Reason: ' + str(posting_result))
                     print('Engine is running. Press CTRL+C to close finish the program.')
             else:
-                print('Couldn\'t send request: ' + original_request)
+                print('Couldn\'t send request: ' + str(original_request))
         time.sleep(controller[indicator_key]['interval_seconds'])
 
 def RunIndicators():
