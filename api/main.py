@@ -3,6 +3,9 @@
 # HTTP response status codes
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#successful_responses
 #
+# CERTIFICATE ISSUE WITH ZSCALER - TO BE FIXED IN FUTURE RELEASES
+# https://levelup.gitconnected.com/solve-the-dreadful-certificate-issues-in-python-requests-module-2020d922c72f
+#
 # Comando para levantar el servicio del API
 # uvicorn main:app --reload --host=192.168.100.108 --port=9000 --app-dir=/home/ubuntu/JUNGLE/api/
 
@@ -115,6 +118,12 @@ def service_login(request_service_login: models.Request_ServiceLogin, status_cod
 def permissions_validate_user(request_has_permissions_user: models.Request_HasPermissionsUser):
     conn = connection()
     results = conn.runSP('[dbo].[sp_validate_has_permission_user]',request_has_permissions_user.json())
+    return return_api_result(results)
+
+@app.post("/permissions/validate/token", tags=["Control de cuentas y accesos"], status_code=200)
+def permissions_validate_token(request_has_permissions_token: models.Request_HasPermissionsToken):
+    conn = connection()
+    results = conn.runSP('[dbo].[sp_validate_has_permission_token]',request_has_permissions_token.json())
     return return_api_result(results)
 
 @app.post("/users/create", tags=["Usuarios"], status_code=201)
@@ -408,12 +417,6 @@ def update_client_settings(request_client_settings: models.Request_Post_ClientSe
     return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 # %% Methods for API usage without Entry Points
 
-#@app.post("/permissions/validate/token", tags=["Validar Permisos por Token"], status_code=200)
-def permissions_validate_token(request_has_permissions_token: models.Request_HasPermissionsToken):
-    conn = connection()
-    results = conn.runSP('[dbo].[sp_validate_has_permission_token]',request_has_permissions_token.json())
-    return return_api_result(results)
-
 def validate_permissions_by_token(request: models.Request_HasPermissionsToken, guard_name: str):
     auth_request = models.Request_HasPermissionsToken(
         token_owner=request.token_owner,
@@ -467,37 +470,3 @@ def return_api_result(
             status_code=http_exception,
             detail=expection_detail
         )
-
-# %% Manual Tests
-
-# request_users_add =  models.Request_UsersAdd(
-#   token_owner= "admin",
-#   token_value= "f27a729e-2489-41da-bcd0-20c487dfd4da",
-#   name_first = "string",
-#   name_last = "string",
-#   email = "string",
-#   username = "string",
-#   password = "string",
-#   enabled = True
-# )
-# users_create(request_users_add)
-
-# request_users_read = models.Request_UsersRead(
-#     token_owner="adminx",
-#     token_value="f27a729e-2489-41da-bcd0-20c487dfd4da",
-#     user_id=3
-# )
-# users_read(request_users_read)
-
-# request_user_update = models.Request_UsersUpdate(
-#   token_owner= "admin",
-#   token_value= "f27a729e-2489-41da-bcd0-20c487dfd4da",
-#   id= 2,
-#   name_first= "leiver",
-#   name_last= "espinoza",
-#   email= "leiver@leiver.com",
-#   username= "lespinoza",
-#   enabled= True
-# )
-
-# users_update(request_user_update)
