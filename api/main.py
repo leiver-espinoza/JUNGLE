@@ -126,11 +126,19 @@ def permissions_validate_token(request_has_permissions_token: models.Request_Has
     results = conn.runSP('[dbo].[sp_validate_has_permission_token]',request_has_permissions_token.json())
     return return_api_result(results)
 
+@app.post("/users/logout", tags=["Control de cuentas y accesos"])
+def users_logout(request_user_logout: models.Request_Logout, request: Request, status_code=200):
+    conn = connection()
+    results = conn.runSP('[dbo].[sp_users_logout]',request_user_logout.json(),True)
+    print(results)
+    return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.UPDATE)
+
+
 @app.post("/users/create", tags=["Usuarios"], status_code=201)
 def create_user(request_users_add: models.Request_UsersAdd):
     if validate_permissions_by_token(request_users_add, 'users_create'):
         conn = connection()
-        results = conn.runSP('[dbo].[sp_users_create]',request_users_add.json(),True)
+        results = conn.runSP('[dbo].[sp_users_create]',request_users_add.json(),True,True)
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.CREATE)
 
 @app.get("/users/read", tags=["Usuarios"], status_code=200)
@@ -362,6 +370,35 @@ def get_dashboard_Details(
     if validate_permissions_by_token(request_dashboard_details, 'stats_read'):
         conn = connection()
         results = conn.runSP('[dbo].[sp_dashboard_details_values]',request_dashboard_details.json())
+        return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
+
+@app.get("/dashboard/DashboardDetailsAll", tags=["Indicadores"], status_code=200)
+def get_dashboard_details_all(
+        param_token_owner= Query(
+            models.Defaults.ADMIN_USERNAME, 
+            title="token_owner", 
+            description=LABELS.TEXTS.CATALOG.get("token_owner")),
+        param_token_value= Query(
+            models.Defaults.ADMIN_TOKEN, 
+            title="token_value", 
+            description=LABELS.TEXTS.CATALOG.get("token_value")),
+        param_client_id= Query(
+            0, 
+            title="client_id", 
+            description=LABELS.TEXTS.CATALOG.get("client_id"))
+    ):
+    try:
+        request_dashboard_CBOS = models.Request_Get_DashboardCBOS(
+            token_owner = param_token_owner,
+            token_value = param_token_value,
+            client_id = param_client_id
+        )
+    except:
+        return return_api_result(None,status.HTTP_400_BAD_REQUEST,LABELS.ERRORS.CATALOG.get("invalid_parameters"))
+
+    if validate_permissions_by_token(request_dashboard_CBOS, 'stats_read'):
+        conn = connection()
+        results = conn.runSP('[dbo].[sp_dashboard_details_all]',request_dashboard_CBOS.json())
         return return_api_result(results,status.HTTP_400_BAD_REQUEST, LABELS.ERRORS.CRUD.READ,True)
 
 @app.get("/clients/get_clients", tags=["Clientes"], status_code=200)

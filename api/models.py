@@ -34,6 +34,10 @@ class Request_HasPermissionsUser(BaseModel):
     username: str = ""
     guard_name: str
 
+class Request_Logout(BaseModel):
+    token_owner: str = ""
+    token_value: str = ""
+
 # FIN - Login y validación de permisos 
 
 # %%
